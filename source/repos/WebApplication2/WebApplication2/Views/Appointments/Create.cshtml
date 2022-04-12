@@ -1,0 +1,102 @@
+﻿@model WebApplication2.Models.Appointment
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <h4>Appointment</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.doctor_id, "doctor_id", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("doctor_id", null, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.doctor_id, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.patient_id, "patient_id", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("patient_id", null, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.patient_id, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.date, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.date, new { htmlAttributes = new { @class = "form-control", @type = "date" } })
+            @Html.ValidationMessageFor(model => model.date, "", new { @class = "text-danger" })
+        </div>
+
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.appointTime, "appointTime", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownList("appointTime", null, htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.appointTime, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var url = '@Url.Action("FetchDocs")';
+        var url1 = '@Url.Action("FetchSchedule")';
+        var doclist = $("#docid");
+        doclist.empty();
+        $("#docspeciality").change(function () {
+            var sp = $(this).val();
+            doclist.empty();
+            doclist.append($('<option></option>').text("Select").val("Select"));
+            $.getJSON(url, { splty: sp }, function (response) {
+                $.each(response, function (key, value) {
+                    doclist.append($('<option></option>')
+                        .val(value.attr)
+                        .text(value.text));
+                });
+            });
+            $("#selection").show()
+        })
+        var ddltime = $("#appointTime");
+        ddltime.empty();
+        $("#date").change(function () {
+            var date = $(this).val();
+            var docid = $("#doctor_id").val();
+            ddltime.empty();
+            ddltime.append($('<option></option>').text("Select").val("Select"));
+            $.getJSON(url1, { date: date, docid: docid }, function (response) {
+                $.each(response, function (key, value) {
+                    ddltime.append($('<option></option>')
+                        .val(value.val)
+                        .text(value.txt));
+                });
+            });
+        });
+    });
+</script>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
